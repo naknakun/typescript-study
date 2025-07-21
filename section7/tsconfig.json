@@ -3,10 +3,10 @@
     "target": "esnext",
     "module": "nodenext",
     "outDir": "dist",
-    "strict": false,
+    "strict": true,
     "moduleDetection": "force",
-    "skipDefaultLibCheck": true,
-    "moduleResolution": "nodenext"
+    "moduleResolution": "nodenext",
+    "allowJs": true
   },
   "include": ["src"]
 }
