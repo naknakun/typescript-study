@@ -1,34 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useReducer, useRef } from 'react';
 import './App.css'
+import Editor from './components/Editor'
+import TodoItem from './components/TodoItem';
+import type { Todo } from './types';
+
+type Action = {
+  type: 'CREATE',
+  data: {
+    id: number;
+    content: string;
+  }
+} | { type: 'DELETE', data: number }
+
+
+function reducer(state: Todo[], action: Action) {
+  switch(action.type){
+    case 'CREATE': {
+      return [...state, action.data];
+    }
+    case 'DELETE': {
+      return state.filter((x) => x.id !== action.data);
+    }
+  }
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [todos, dispatch] = useReducer(reducer, []);
+
+  const idRef = useRef(0);
+
+  useEffect(() => {
+    console.log(todos);
+  }, [todos])
+
+  const onClickAdd = (text: string) => {
+    dispatch({
+      type: 'CREATE',
+      data: {
+        id: idRef.current++,
+        content: text
+      }
+    })
+  }
+
+  const onClickRemove = (id: number) => {
+    dispatch({
+      type: 'DELETE',
+      data: id
+    })
+  }
 
   return (
-    <>
+    <div className='App'>
+      <h1>Todo</h1>
+      <Editor oncClickAdd={onClickAdd} >
+      </Editor>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {
+          todos.map((todo) => 
+            (
+              <TodoItem key={todo.id} {...todo} onClickDelete={onClickRemove}/>
+            )
+          )
+        }
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
